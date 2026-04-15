@@ -16,7 +16,7 @@ export default function AreaHistorico({ data }: { data: { anio: number; monto: n
         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
         <XAxis dataKey="anio" tick={{ fontSize: 12 }} />
         <YAxis tickFormatter={millones} tick={{ fontSize: 11 }} />
-        <Tooltip formatter={(v: number) => [millones(v), "Ejecutado"]} />
+        <Tooltip formatter={(v) => [millones(Number(v)), "Ejecutado"]} />
         <Area type="monotone" dataKey="monto" stroke="#2563eb" strokeWidth={2} fill="url(#grad)" />
       </AreaChart>
     </ResponsiveContainer>
