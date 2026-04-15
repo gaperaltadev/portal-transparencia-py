@@ -11,7 +11,7 @@ export default function BarrasCategoria({ data }: { data: { categoria: string; m
       <BarChart data={top} layout="vertical" margin={{ left: 8, right: 24, top: 4, bottom: 4 }}>
         <XAxis type="number" tickFormatter={millones} tick={{ fontSize: 11 }} />
         <YAxis type="category" dataKey="categoria" width={148} tick={{ fontSize: 11 }} />
-        <Tooltip formatter={(v: number) => [millones(v), "Monto"]} />
+        <Tooltip formatter={(v) => [millones(Number(v)), "Monto"]} />
         <Bar dataKey="monto" radius={[0, 4, 4, 0]}>
           {top.map((_, i) => <Cell key={i} fill={COLORES[i % COLORES.length]} />)}
         </Bar>
