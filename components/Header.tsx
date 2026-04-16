@@ -14,7 +14,11 @@ export default function Header({ breadcrumb }: HeaderProps) {
     <header className="bg-white border-b border-gray-200">
       <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-4">
         <Link href="/" className="flex items-center gap-3 shrink-0">
-          <div className="w-8 h-8 bg-blue-600 rounded-md" aria-hidden="true" />
+          <div className="w-8 h-8 bg-teal-700 rounded-md flex items-center justify-center" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 21h18" /><path d="M5 21V7l7-4 7 4v14" /><path d="M9 21v-6h6v6" />
+            </svg>
+          </div>
           <div>
             <p className="font-bold text-gray-900 leading-tight text-sm">Transparencia Municipal PY</p>
             <p className="text-xs text-gray-500">Gastos públicos · Paraguay</p>
@@ -28,7 +32,7 @@ export default function Header({ breadcrumb }: HeaderProps) {
                 <li key={item.label} className="flex items-center gap-2">
                   {i > 0 && <span aria-hidden="true">/</span>}
                   {item.href ? (
-                    <Link href={item.href} className="hover:text-blue-600 transition-colors">
+                    <Link href={item.href} className="hover:text-teal-600 transition-colors">
                       {item.label}
                     </Link>
                   ) : (

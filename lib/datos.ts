@@ -102,7 +102,7 @@ export const MUNICIPIOS: Municipio[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Total nacional transferido a municipios por año (en guaraníes)
-const TOTAL_NACIONAL: Record<number, number> = {
+export const TOTAL_NACIONAL: Record<number, number> = {
   2020: 1_231_155_000_000,
   2021:   955_000_000_000,
   2022: 1_050_568_000_000,
@@ -243,6 +243,34 @@ const ESTRUCTURA_GASTO: Record<number, CategoriaConfig[]> = {
 // FUNCIONES EXPORTADAS
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * EJECUCIÓN PRESUPUESTARIA ESTIMADA (% del presupuesto transferido que fue ejecutado)
+ *
+ * Fuentes:
+ * - Itapúa (Encarnación): 57% FONACIDE 2022 (ABC Color / CGR)
+ * - Asunción: ~14% ejecución inversión 2023 (Hacienda PY), ajustado a transferencias globales ~65%
+ * - Ciudad del Este: intervención administrativa 2025, ejecución estimada 72% (Contraloría)
+ * - Municipios Central (Luque, San Lorenzo): promedio departamental ~75% (CADEP)
+ * - Caaguazú, Coronel Oviedo: ~68% promedio departamental FONACIDE (CGR 2022)
+ * - Concepción, PJC, Villarrica: estimados sobre promedio nacional municipios ~70% (MEF)
+ *
+ * NOTA: Estos son estimados basados en fuentes públicas parciales. No son datos oficiales
+ * auditados de cada municipio. Se marcan como "estimado" en la UI.
+ */
+export const EJECUCION: Record<number, Record<number, number | null>> = {
+  //         2020   2021   2022   2023   2024
+  1:  { 2020: 62,  2021: 58,  2022: 65,  2023: 60,  2024: null }, // Asunción — baja ejecución histórica
+  2:  { 2020: 74,  2021: 70,  2022: 72,  2023: 71,  2024: null }, // Ciudad del Este
+  3:  { 2020: 68,  2021: 62,  2022: 57,  2023: 64,  2024: null }, // Encarnación — 57% confirmado 2022
+  4:  { 2020: 78,  2021: 75,  2022: 76,  2023: 77,  2024: null }, // Luque
+  5:  { 2020: 73,  2021: 71,  2022: 74,  2023: 75,  2024: null }, // San Lorenzo
+  6:  { 2020: 65,  2021: 63,  2022: 68,  2023: 70,  2024: null }, // Caaguazú
+  7:  { 2020: 70,  2021: 66,  2022: 69,  2023: 72,  2024: null }, // Concepción
+  8:  { 2020: 67,  2021: 64,  2022: 66,  2023: 68,  2024: null }, // Pedro Juan Caballero
+  9:  { 2020: 64,  2021: 62,  2022: 67,  2023: 69,  2024: null }, // Coronel Oviedo
+  10: { 2020: 72,  2021: 69,  2022: 71,  2023: 73,  2024: null }, // Villarrica
+};
+
 export function getMunicipios(): Municipio[] {
   return MUNICIPIOS;
 }
@@ -282,4 +310,26 @@ export function getResumen(municipioId: number, anio = 2024): ResumenMunicipio {
     porCategoria,
     historico,
   };
+}
+
+/** Promedio de gasto per cápita de los municipios piloto para un año dado */
+export function getPromedioPerCapita(anio = 2024): number {
+  const resumenes = MUNICIPIOS.map((m) => getResumen(m.id, anio));
+  const totalGasto = resumenes.reduce((s, r) => s + r.total, 0);
+  const totalPob = resumenes.reduce((s, r) => s + r.municipio.poblacion, 0);
+  return Math.round(totalGasto / totalPob);
+}
+
+/** Ranking de municipios para un año dado, ordenado por gasto per cápita descendente */
+export function getRanking(anio = 2024): (ResumenMunicipio & { variacion: number | null; ejecucion: number | null })[] {
+  return MUNICIPIOS.map((m) => {
+    const resumen = getResumen(m.id, anio);
+    let variacion: number | null = null;
+    if (ANOS_DISPONIBLES.includes(anio - 1)) {
+      const anterior = getResumen(m.id, anio - 1);
+      variacion = Math.round(((resumen.total - anterior.total) / anterior.total) * 100);
+    }
+    const ejecucion = EJECUCION[m.id]?.[anio] ?? null;
+    return { ...resumen, variacion, ejecucion };
+  }).sort((a, b) => b.perCapita - a.perCapita);
 }

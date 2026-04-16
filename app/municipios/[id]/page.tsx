@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getResumen, MUNICIPIOS, ANOS_DISPONIBLES } from "@/lib/datos";
+import { getResumen, getPromedioPerCapita, MUNICIPIOS, ANOS_DISPONIBLES, EJECUCION } from "@/lib/datos";
+import { getResumenCiudadano } from "@/lib/resumenes";
 import { guaranies, millones } from "@/lib/format";
 import BarrasCategoria from "@/components/charts/BarrasCategoria";
 import AreaHistorico from "@/components/charts/AreaHistorico";
@@ -47,14 +48,30 @@ export default async function MunicipioPage({ params, searchParams }: Props) {
   }
 
   const { municipio, total, perCapita, porCategoria, historico } = resumen;
+  const promedio = getPromedioPerCapita(anio);
+  const diffPct = Math.round(((perCapita - promedio) / promedio) * 100);
+  const ejecucion = EJECUCION[Number(id)]?.[anio] ?? null;
+  const resumenCiudadano = getResumenCiudadano(Number(id), anio);
 
   return (
     <main className="min-h-screen">
       <Header breadcrumb={[{ label: "Inicio", href: "/" }, { label: municipio.nombre }]} />
 
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold">{municipio.nombre}</h1>
-        <p className="text-gray-500 mt-1 mb-6">{municipio.departamento}</p>
+        <div className="flex flex-wrap items-center gap-3 mb-1">
+          <h1 className="text-3xl font-extrabold">{municipio.nombre}</h1>
+          <span
+            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+              diffPct >= 0
+                ? "bg-teal-50 text-teal-700 border border-teal-200"
+                : "bg-gray-100 text-gray-600 border border-gray-200"
+            }`}
+            title={`Promedio de municipios piloto: ${guaranies(promedio)} per cápita`}
+          >
+            {diffPct >= 0 ? "↑" : "↓"} {Math.abs(diffPct)}% vs promedio
+          </span>
+        </div>
+        <p className="text-gray-500 mt-1 mb-6">{municipio.departamento} · {municipio.poblacion.toLocaleString("es-PY")} hab.</p>
 
         {/* Selector de año */}
         <div className="flex gap-2 mb-8 flex-wrap" role="group" aria-label="Seleccionar año">
@@ -65,8 +82,8 @@ export default async function MunicipioPage({ params, searchParams }: Props) {
               aria-current={y === anio ? "page" : undefined}
               className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                 y === anio
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white text-gray-500 border-gray-200 hover:border-blue-400"
+                  ? "bg-teal-700 text-white border-teal-700"
+                  : "bg-white text-gray-500 border-gray-200 hover:border-teal-400"
               }`}
             >
               {y}
@@ -74,14 +91,20 @@ export default async function MunicipioPage({ params, searchParams }: Props) {
           ))}
         </div>
 
+        {/* Resumen en lenguaje ciudadano */}
+        <div className="bg-teal-50 border border-teal-200 rounded-xl px-5 py-4 mb-8">
+          <p className="text-sm text-teal-900 leading-relaxed">{resumenCiudadano}</p>
+        </div>
+
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Total ejecutado", value: guaranies(total), sub: `Año ${anio}` },
+            { label: "Total transferido", value: guaranies(total), sub: `Año ${anio}` },
             { label: "Gasto per cápita", value: guaranies(perCapita), sub: `${municipio.poblacion.toLocaleString("es-PY")} habitantes` },
             { label: "Categorías", value: String(porCategoria.length), sub: "rubros de gasto" },
+            { label: "Ejecución estimada", value: ejecucion !== null ? `${ejecucion}%` : "—", sub: ejecucion !== null ? "del presupuesto transferido" : `Sin dato para ${anio}` },
           ].map(({ label, value, sub }) => (
-            <div key={label} className="bg-white rounded-xl border border-gray-200 p-5">
+            <div key={label} className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
               <p className="text-sm text-gray-500 mb-1">{label}</p>
               <p className="text-2xl font-bold">{value}</p>
               <p className="text-xs text-gray-500 mt-1">{sub}</p>
@@ -105,7 +128,7 @@ export default async function MunicipioPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <Link href={`/comparar?m1=${id}`} className="text-sm text-blue-600 hover:underline font-medium">
+        <Link href={`/comparar?m1=${id}`} className="text-sm text-teal-600 hover:underline font-medium">
           Comparar con otro municipio →
         </Link>
 
