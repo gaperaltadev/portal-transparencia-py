@@ -7,5 +7,7 @@ export function guaranies(monto: number): string {
 }
 
 export function millones(monto: number): string {
+  if (monto >= 1_000_000_000)
+    return `₲ ${(monto / 1_000_000_000).toFixed(1)}B`;
   return `₲ ${(monto / 1_000_000).toFixed(1)}M`;
 }

@@ -110,6 +110,9 @@ const TOTAL_NACIONAL: Record<number, number> = {
   2024: 1_310_000_000_000,
 };
 
+/** Años con datos disponibles — fuente única para selectores y validación */
+export const ANOS_DISPONIBLES: number[] = Object.keys(TOTAL_NACIONAL).map(Number).sort();
+
 // Participación de cada municipio en el total nacional (%)
 // Derivada de: % departamental × (población municipal / población total departamental)
 // Asunción: solo royalties, sin FONACIDE (congelado desde 2018 por incumplimiento MEF)
@@ -248,11 +251,13 @@ export function getResumen(municipioId: number, anio = 2024): ResumenMunicipio {
   const municipio = MUNICIPIOS.find((m) => m.id === municipioId);
   if (!municipio) throw new Error(`Municipio ${municipioId} no encontrado`);
 
+  if (!TOTAL_NACIONAL[anio]) throw new Error(`Año ${anio} fuera del rango disponible`);
+
   const participacion = PARTICIPACION_NACIONAL[municipioId];
   const estructura = ESTRUCTURA_GASTO[municipioId];
 
   // Total recibido en el año solicitado
-  const totalNacional = TOTAL_NACIONAL[anio] ?? TOTAL_NACIONAL[2024];
+  const totalNacional = TOTAL_NACIONAL[anio];
   const total = Math.round(totalNacional * participacion);
 
   // Desglose por categoría

@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portal de Transparencia Fiscal — Paraguay
 
-## Getting Started
+Portal web de acceso libre para consultar, visualizar y comparar gastos públicos de municipios de Paraguay.
 
-First, run the development server:
+**Estado:** MVP — en desarrollo desde 15/04/2026  
+**Stack:** Next.js 14 · TypeScript · Tailwind CSS · Recharts  
+**Demo:** _(próximamente en Vercel)_
+
+---
+
+## ¿Qué es?
+
+Plataforma que expone datos reales de transferencias del gobierno central a municipios paraguayos (FONACIDE, royalties, TGN). Permite:
+
+- Consultar el gasto por categoría presupuestaria de cada municipio
+- Ver la evolución histórica 2020–2024
+- Comparar dos municipios lado a lado
+
+Los datos están basados en fuentes públicas oficiales (Hacienda PY, datos.gov.py, INE) y metodología documentada.
+
+---
+
+## Inicio rápido
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrí [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Municipios piloto (MVP)
 
-## Learn More
+Asunción · Ciudad del Este · Encarnación · Luque · San Lorenzo  
+Caaguazú · Concepción · Pedro Juan Caballero · Coronel Oviedo · Villarrica
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estructura del proyecto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+portal-transparencia-py/
+├── app/
+│   ├── page.tsx                   # Home — lista de municipios
+│   ├── municipios/[id]/page.tsx   # Detalle de municipio con charts
+│   ├── comparar/page.tsx          # Comparativa entre dos municipios
+│   └── api/municipios/route.ts    # API REST de municipios
+├── components/
+│   ├── charts/
+│   │   ├── AreaHistorico.tsx      # Gráfico de evolución histórica
+│   │   └── BarrasCategoria.tsx    # Gráfico de gasto por categoría
+│   ├── Header.tsx                 # Header compartido con breadcrumb
+│   └── Footer.tsx                 # Footer con fuentes de datos
+├── lib/
+│   ├── datos.ts                   # Datos, interfaces y lógica de cálculo
+│   └── format.ts                  # Formateadores de guaraníes
+└── docs/                          # Documentación del proyecto
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Fuentes de datos
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Fuente | Tipo | Contenido |
+|--------|------|-----------|
+| datos.gov.py | API CKAN | Transferencias oficiales |
+| FONACIDE (Hacienda PY) | XLSX | Distribución por municipio |
+| Hacienda PY | Reportes anuales | Totales nacionales 2020–2024 |
+| INE Paraguay | Censo 2022 | Población municipal |
+
+> Los montos representan **transferencias del gobierno central** a los municipios, no la totalidad del presupuesto municipal.
+
+---
+
+## Documentación
+
+- [Visión de producto](docs/vision-producto.md)
+- [Arquitectura técnica](docs/arquitectura.md)
+- [Backlog MVP](docs/backlog-mvp.md)
+- [Inventario de datasets](docs/inventario-datasets.md)
+- [Reuniones](docs/reuniones/)

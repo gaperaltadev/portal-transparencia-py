@@ -1,19 +1,12 @@
 import Link from "next/link";
 import { MUNICIPIOS } from "@/lib/datos";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
     <main className="min-h-screen">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 py-5 flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-md" />
-          <div>
-            <p className="font-bold text-gray-900 leading-tight">Transparencia Municipal PY</p>
-            <p className="text-xs text-gray-400">Gastos públicos de municipios de Paraguay</p>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div className="max-w-5xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold mb-2">¿Cuánto gasta tu municipio?</h1>
@@ -43,20 +36,15 @@ export default function Home() {
             >
               <div>
                 <p className="font-semibold group-hover:text-blue-600 transition-colors">{m.nombre}</p>
-                <p className="text-sm text-gray-400">{m.departamento} · {m.poblacion.toLocaleString("es-PY")} hab.</p>
+                <p className="text-sm text-gray-500">{m.departamento} · {m.poblacion.toLocaleString("es-PY")} hab.</p>
               </div>
-              <span className="text-gray-300 group-hover:text-blue-400 text-xl transition-colors">›</span>
+              <span className="text-gray-300 group-hover:text-blue-400 text-xl transition-colors" aria-hidden="true">›</span>
             </Link>
           ))}
         </div>
       </div>
 
-      <footer className="mt-16 border-t border-gray-200 bg-white">
-        <div className="max-w-5xl mx-auto px-4 py-5 text-xs text-gray-400 flex justify-between flex-wrap gap-2">
-          <span>Transparencia Municipal PY · OrgSim S.A.</span>
-          <span>Fuentes: datos.gov.py · FONACIDE · Hacienda PY</span>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

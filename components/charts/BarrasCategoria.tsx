@@ -13,7 +13,7 @@ export default function BarrasCategoria({ data }: { data: { categoria: string; m
         <YAxis type="category" dataKey="categoria" width={148} tick={{ fontSize: 11 }} />
         <Tooltip formatter={(v) => [millones(Number(v)), "Monto"]} />
         <Bar dataKey="monto" radius={[0, 4, 4, 0]}>
-          {top.map((_, i) => <Cell key={i} fill={COLORES[i % COLORES.length]} />)}
+          {top.map((entry, i) => <Cell key={entry.categoria} fill={COLORES[i % COLORES.length]} />)}
         </Bar>
       </BarChart>
     </ResponsiveContainer>
